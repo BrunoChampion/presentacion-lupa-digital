@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lupa Fiscal - Pitch</title>
+  <style>
+    :root {
+      --bg: #f7f5ef;
+      --paper: #fffdf8;
+      --ink: #19201d;
+      --muted: #66716d;
+      --line: #d8d2c6;
+      --green: #16775a;
+      --amber: #b97809;
+      --red: #ba3428;
+      --blue: #235e8f;
+      --teal: #138275;
+      --shadow: 0 24px 80px rgba(32, 35, 31, 0.12);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(35, 94, 143, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(35, 94, 143, 0.05) 1px, transparent 1px),
+        var(--bg);
+      background-size: 42px 42px;
+      color: var(--ink);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(22, 119, 90, 0.08), transparent 36%, rgba(35, 94, 143, 0.08));
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: clamp(28px, 4vw, 56px);
+    }
+
+    .slide.is-active {
+      display: grid;
+      animation: enter 360ms ease both;
+    }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .frame {
+      width: min(1180px, 100%);
+      height: min(680px, 100%);
+      margin: auto;
+      background: rgba(255, 253, 248, 0.92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(34px, 4.6vw, 64px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--amber));
+    }
+
+    .topline,
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      font-weight: 750;
+    }
+
+    .brand {
+      color: var(--ink);
+      font-weight: 900;
+      text-transform: none;
+      font-size: 16px;
+    }
+
+    .progress {
+      width: 220px;
+      height: 6px;
+      border-radius: 999px;
+      background: #e6e0d5;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      width: var(--p, 10%);
+      height: 100%;
+      background: var(--green);
+      transition: width 220ms ease;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(48px, 7vw, 82px);
+      line-height: 0.95;
+      letter-spacing: 0;
+      max-width: 920px;
+    }
+
+    h2 {
+      font-size: clamp(34px, 5.2vw, 62px);
+      line-height: 1;
+      letter-spacing: 0;
+      max-width: 960px;
+    }
+
+    h3 {
+      font-size: 22px;
+      line-height: 1.12;
+    }
+
+    .lead {
+      max-width: 820px;
+      color: var(--muted);
+      font-size: clamp(20px, 2.2vw, 28px);
+      line-height: 1.28;
+      font-weight: 520;
+    }
+
+    .body {
+      display: grid;
+      align-content: center;
+      gap: 30px;
+      min-height: 0;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(360px, 0.98fr);
+      gap: 42px;
+      align-items: center;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .kpis,
+    .three,
+    .two {
+      display: grid;
+      gap: 16px;
+    }
+
+    .kpis { grid-template-columns: repeat(3, 1fr); }
+    .three { grid-template-columns: repeat(3, 1fr); }
+    .two { grid-template-columns: repeat(2, 1fr); }
+
+    .tile {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.68);
+      padding: 18px;
+      min-height: 118px;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+    }
+
+    .tile strong {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .tile span,
+    .caption {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.38;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 780;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .map {
+      position: relative;
+      min-height: 420px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(120deg, rgba(35, 94, 143, 0.12), transparent 55%),
+        linear-gradient(0deg, rgba(22, 119, 90, 0.08), transparent),
+        #faf8f1;
+      overflow: hidden;
+    }
+
+    .coast {
+      position: absolute;
+      width: 45%;
+      height: 118%;
+      top: -8%;
+      left: 18%;
+      border-left: 20px solid rgba(35, 94, 143, 0.16);
+      border-radius: 50%;
+      transform: rotate(11deg);
+    }
+
+    .pin {
+      position: absolute;
+      width: var(--s);
+      height: var(--s);
+      left: var(--x);
+      top: var(--y);
+      border-radius: 999px;
+      background: var(--c);
+      border: 4px solid rgba(255, 255, 255, 0.86);
+      box-shadow: 0 9px 24px rgba(25, 32, 29, 0.22);
+    }
+
+    .map-label {
+      position: absolute;
+      left: 22px;
+      bottom: 22px;
+      right: 22px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 720;
+    }
+
+    .searchbox {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      box-shadow: 0 12px 40px rgba(25, 32, 29, 0.08);
+    }
+
+    .fake-input {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      height: 54px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0 15px;
+      color: var(--muted);
+      font-size: 18px;
+      background: #faf8f1;
+    }
+
+    .risk {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .gauge {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        conic-gradient(var(--red) 0 62%, var(--amber) 62% 82%, var(--green) 82% 100%);
+      color: #fff;
+      font-weight: 900;
+      font-size: 26px;
+      box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.32);
+    }
+
+    .bars {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: 138px 1fr 46px;
+      gap: 12px;
+      align-items: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .bar i {
+      height: 10px;
+      border-radius: 999px;
+      background: #e7e1d7;
+      overflow: hidden;
+    }
+
+    .bar i::before {
+      content: "";
+      display: block;
+      width: var(--w);
+      height: 100%;
+      background: var(--c);
+      border-radius: inherit;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .step {
+      position: relative;
+      min-height: 152px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 18px 16px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -13px;
+      width: 13px;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .num {
+      color: var(--green);
+      font-weight: 900;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--blue);
+      background: rgba(35, 94, 143, 0.08);
+      border: 1px solid rgba(35, 94, 143, 0.18);
+      padding: 4px 7px;
+      border-radius: 6px;
+    }
+
+    .quote {
+      border-left: 5px solid var(--green);
+      padding-left: 20px;
+      max-width: 870px;
+      font-size: clamp(27px, 3.6vw, 44px);
+      line-height: 1.08;
+      font-weight: 850;
+    }
+
+    .rubric {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 26px;
+      align-items: center;
+    }
+
+    .donut {
+      width: min(330px, 100%);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      margin: auto;
+      background:
+        conic-gradient(var(--green) 0 40%, var(--blue) 40% 70%, var(--amber) 70% 85%, var(--red) 85% 100%);
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      box-shadow: inset 0 0 0 55px var(--paper);
+      font-size: 48px;
+      font-weight: 900;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 13px;
+    }
+
+    .check {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+      align-items: start;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .check b {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+    }
+
+    .closing {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .mini-ui {
+      display: grid;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0 16px 48px rgba(25, 32, 29, 0.1);
+    }
+
+    .mini-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #ece6da;
+      border-radius: 7px;
+      background: #fbfaf5;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 850;
+      background: var(--green);
+    }
+
+    .pill.red { background: var(--red); }
+    .pill.amber { background: var(--amber); }
+
+    .notes {
+      display: none;
+    }
+
+    .notes-panel {
+      position: fixed;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      z-index: 10;
+      max-height: 34vh;
+      overflow: auto;
+      display: none;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.98);
+      box-shadow: var(--shadow);
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .notes-panel.is-open { display: block; }
+
+    .notes-panel strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 860px) {
+      body { overflow: auto; }
+      .deck { height: auto; min-height: 100vh; }
+      .slide { position: relative; min-height: 100vh; }
+      .frame { height: auto; min-height: calc(100vh - 56px); }
+      .split,
+      .rubric,
+      .closing {
+        grid-template-columns: 1fr;
+      }
+      .kpis,
+      .three,
+      .two,
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+      .progress { width: 130px; }
+      .map { min-height: 300px; }
+      .step:not(:last-child)::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" aria-live="polite">
+    <section class="slide is-active">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">Lupa Fiscal</span>
+          <span>Pitch hackathon - 5 minutos</span>
+        </div>
+        <div class="body split cover">
+          <div class="stack">
+            <span class="tag"><span class="dot"></span> Verificador de riesgo por RUC</span>
+            <h1>Antes de firmar, revisa el RUC.</h1>
+            <p class="lead">Lupa Fiscal convierte datos abiertos en acciones: ciudadanos pueden revisar obras paralizadas; entidades y empresas pueden evaluar proveedores antes de contratar.</p>
+          </div>
+          <div class="mini-ui">
+            <div class="mini-row"><span>Busca un RUC</span><span class="pill">1 minuto</span></div>
+            <div class="mini-row"><span>Recibe un veredicto</span><span class="pill amber">medio</span></div>
+            <div class="mini-row"><span>Revisa las razones</span><span class="pill">trazable</span></div>
+            <div class="mini-row"><span>Decide: continuar o escalar</span><span class="pill red">acción</span></div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Builders For The Win</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Abrimos con los dos usuarios. Para ciudadanos, la acción es informarse y denunciar con evidencia. Para entidades y empresas, la acción es revisar proveedores antes de contratar, asociarse o financiar. Lupa Fiscal no acusa: muestra señales objetivas y trazables.
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">01 - Problema</span>
+          <span>La revisión manual no escala</span>
+        </div>
+        <div class="body">
+          <h2>Hay riesgo público visible, pero está disperso y cuesta convertirlo en acción.</h2>
+          <div class="kpis">
+            <div class="tile">
+              <strong>2,700+</strong>
+              <span>obras públicas paralizadas en el Perú a inicios de 2026.</span>
+            </div>
+            <div class="tile">
+              <strong>S/ 67,139M</strong>
+              <span>de inversión congelada según Contraloría / INFOBRAS.</span>
+            </div>
+            <div class="tile">
+              <strong>5+</strong>
+              <span>fuentes públicas que hoy se cruzan manualmente.</span>
+            </div>
+          </div>
+          <p class="lead">El problema no es que falte data. Es que falta una interfaz para decidir y actuar.</p>
+        </div>
+        <div class="footer">
+          <span>Contraloría - INFOBRAS - OECE - SEACE</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Esta slide da escala. Hay más de 2,700 obras paralizadas y S/ 67,139 millones congelados. El mismo problema se repite en contratación: la data existe, pero está dispersa. Lupa Fiscal la convierte en acciones concretas para ciudadanos y para quienes deben contratar mejor.
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">02 - Solución</span>
+          <span>Una consulta, una decisión preliminar</span>
+        </div>
+        <div class="body">
+          <h2>Un motor de señales, dos caminos de uso.</h2>
+          <div class="three">
+            <div class="tile">
+              <span class="tag"><span class="dot"></span> Ciudadano</span>
+              <h3>Ver y denunciar</h3>
+              <p class="caption">Mapa de obras paralizadas, entidad responsable, monto congelado y evidencia para reclamar.</p>
+            </div>
+            <div class="tile">
+              <span class="tag"><span class="dot" style="background: var(--blue)"></span> Estado / empresa</span>
+              <h3>Evaluar proveedor</h3>
+              <p class="caption">RUC, semáforo, sanciones, postor único, concentración, penalidades y evidencia.</p>
+            </div>
+            <div class="tile">
+              <span class="tag"><span class="dot" style="background: var(--amber)"></span> Mismo núcleo</span>
+              <h3>Reglas trazables</h3>
+              <p class="caption">No es una caja negra: cada bandera explica su fuente, peso y razón.</p>
+            </div>
+          </div>
+          <div class="quote">Transparencia para actuar. Debida diligencia para decidir.</div>
+        </div>
+        <div class="footer">
+          <span>Lenguaje responsable: señales, no acusaciones</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Aquí dejamos claros los dos usuarios sin vender dos productos separados. El ciudadano usa Lupa Fiscal para informarse y denunciar. La entidad o empresa usa Lupa Fiscal para evaluar si conviene contratar o pedir más garantías. Ambos dependen del mismo motor de señales.
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">03 - Demo principal</span>
+          <span>Debida diligencia por RUC</span>
+        </div>
+        <div class="body split">
+          <div class="stack">
+            <h2>La pregunta clave: ¿conviene trabajar con este proveedor?</h2>
+            <div class="searchbox">
+              <div class="fake-input"><span>20123456789</span><span class="code">Analizar</span></div>
+              <div class="risk">
+                <div class="gauge">8</div>
+                <div>
+                  <h3>Riesgo alto: requiere revisión</h3>
+                  <p class="caption">El score suma señales públicas y explica cada bandera.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bars">
+            <div class="bar"><span>Sanción</span><i style="--w: 100%; --c: var(--red)"></i><b>sí</b></div>
+            <div class="bar"><span>Postor único</span><i style="--w: 86%; --c: var(--red)"></i><b>86%</b></div>
+            <div class="bar"><span>Concentración</span><i style="--w: 72%; --c: var(--amber)"></i><b>72%</b></div>
+            <div class="bar"><span>Penalidades</span><i style="--w: 48%; --c: var(--amber)"></i><b>3</b></div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Mostrar en vivo: búsqueda RUC - semáforo - evidencia</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Esta es la demo principal. Mostrar el RUC, el semáforo y las banderas. El mensaje es: en menos de un minuto el usuario sabe si sigue adelante, pide más documentación, solicita garantías o escala el caso a legal/compliance. Importante: no venderlo como sentencia, sino como filtro preliminar de riesgo en contratación pública.
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">04 - Contexto público</span>
+          <span>Beneficio directo ciudadano</span>
+        </div>
+        <div class="body split">
+          <div class="stack">
+            <h2>Para el ciudadano: de indignación a denuncia con evidencia.</h2>
+            <div class="checklist">
+              <div class="check"><b>1</b><span>Encuentra obras paralizadas por región y monto congelado.</span></div>
+              <div class="check"><b>2</b><span>Ve causal, avance, entidad responsable y evidencia trazable.</span></div>
+              <div class="check"><b>3</b><span>Puede denunciar, pedir información o compartir el caso.</span></div>
+            </div>
+          </div>
+          <div class="map" aria-label="Mapa esquemático de obras paralizadas">
+            <div class="coast"></div>
+            <span class="pin" style="--x: 52%; --y: 18%; --s: 34px; --c: var(--red)"></span>
+            <span class="pin" style="--x: 44%; --y: 34%; --s: 24px; --c: var(--amber)"></span>
+            <span class="pin" style="--x: 58%; --y: 46%; --s: 42px; --c: var(--red)"></span>
+            <span class="pin" style="--x: 38%; --y: 61%; --s: 28px; --c: var(--green)"></span>
+            <span class="pin" style="--x: 50%; --y: 73%; --s: 22px; --c: var(--amber)"></span>
+            <div class="map-label"><span>Riesgo por color</span><span>Monto por tamaño</span></div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Mostrar en vivo solo si hay tiempo: región - mapa - drawer</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Esta slide reivindica el beneficio ciudadano directo. No es solo mirar un mapa: es saber qué obra está parada, cuánto dinero está congelado, quién responde y qué puede hacer el ciudadano después: denunciar, pedir información o compartir evidencia.
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">05 - Arquitectura</span>
+          <span>La parte que pesa 40%</span>
+        </div>
+        <div class="body">
+          <h2>La ficha es simple porque la ingeniería carga el peso.</h2>
+          <div class="pipeline">
+            <div class="step">
+              <span class="num">Fuentes</span>
+              <h3>Estado</h3>
+              <p class="caption">OCDS, INFOBRAS, sanciones, penalidades y anexos.</p>
+            </div>
+            <div class="step">
+              <span class="num">ETL</span>
+              <h3>Normalización</h3>
+              <p class="caption">Parseo tolerante, row counts y fecha de corte.</p>
+            </div>
+            <div class="step">
+              <span class="num">Datos</span>
+              <h3>Postgres</h3>
+              <p class="caption">Tablas limpias y repositorios intercambiables.</p>
+            </div>
+            <div class="step">
+              <span class="num">Dominio</span>
+              <h3>Reglas puras</h3>
+              <p class="caption">Score determinístico, testeable y explicable.</p>
+            </div>
+            <div class="step">
+              <span class="num">Producto</span>
+              <h3>API + ficha</h3>
+              <p class="caption">Buscador por RUC, semáforo, banderas y evidencia.</p>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>ADR-0001: precargar datos, no depender de portales en vivo</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Esta slide es central para la rúbrica. Decir explícitamente que no llamamos portales del Estado desde la UI porque sería lento, frágil y riesgoso para una demo. La arquitectura separa ingesta, dominio, aplicación e infraestructura. Eso permite que el veredicto por RUC sea rápido, estable y testeable sin navegador ni base de datos.
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">06 - Decisiones defendibles</span>
+          <span>IA con criterio de ingeniería</span>
+        </div>
+        <div class="body rubric">
+          <div class="stack">
+          <h2>El veredicto no lo decide una IA. Lo calculan reglas explícitas.</h2>
+            <div class="checklist">
+              <div class="check"><b>✓</b><span><strong>Reglas puras:</strong> cada bandera suma peso y explica el motivo.</span></div>
+              <div class="check"><b>✓</b><span><strong>Datos trazables:</strong> fuente, corte y evidencia detrás del RUC.</span></div>
+              <div class="check"><b>✓</b><span><strong>Uso responsable de IA:</strong> copiloto para arquitectura, boilerplate, tests y documentación.</span></div>
+            </div>
+          </div>
+          <div class="donut">40%</div>
+        </div>
+        <div class="footer">
+          <span>Preparado para Q&A técnico: motor, ETL, ADRs y tests</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Esta slide defiende la postura ante el jurado. En una hackathon de IA, lo importante no es decir "la IA lo hizo", sino mostrar que el equipo entiende lo que construyó. El score se calcula por reglas. La IA ayuda a acelerar trabajo, pero no toma decisiones de riesgo ni inventa evidencia.
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="frame">
+        <div class="topline">
+          <span class="brand">07 - Cierre</span>
+          <span>Qué se lleva el jurado</span>
+        </div>
+        <div class="body closing">
+          <div class="stack">
+          <h2>Gratis para informar. Pro para decidir a escala.</h2>
+            <p class="lead">Hoy: acceso gratuito para ciudadanos, entidades y empresas. Roadmap: monetizar funciones avanzadas para quienes evalúan proveedores recurrentemente.</p>
+            <div class="quote">Impacto cívico primero; sostenibilidad con debida diligencia.</div>
+          </div>
+          <div class="three" style="grid-template-columns: 1fr;">
+            <div class="tile"><h3>Gratis ciudadano</h3><p class="caption">Mapa, fichas y acciones para denuncia o acceso a información.</p></div>
+            <div class="tile"><h3>Gratis inicial</h3><p class="caption">Consulta básica por RUC para entidades y empresas.</p></div>
+            <div class="tile"><h3>Roadmap Pro</h3><p class="caption">Alertas, reportes, API, monitoreo masivo y scoring histórico.</p></div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Lupa Fiscal - Rayos X de las contrataciones públicas del Perú</span>
+          <div class="progress"><span></span></div>
+        </div>
+        <aside class="notes">
+          Cerrar con el modelo sin sobreexplicarlo. Primero crecemos con uso gratuito: ciudadanos que fiscalizan y organizaciones que consultan RUCs. Luego monetizamos lo que naturalmente paga una entidad o empresa: alertas, reportes, API, monitoreo de portafolios y evaluaciones recurrentes.
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div class="notes-panel" id="notes-panel" aria-live="polite"></div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const notesPanel = document.getElementById("notes-panel");
+    let current = 0;
+
+    function setProgress() {
+      const progress = ((current + 1) / slides.length) * 100;
+      document.querySelectorAll(".progress span").forEach((bar) => {
+        bar.style.setProperty("--p", progress + "%");
+      });
+    }
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("is-active", i === current);
+      });
+      window.location.hash = String(current + 1);
+      setProgress();
+      if (notesPanel.classList.contains("is-open")) showNotes();
+    }
+
+    function showNotes() {
+      const text = slides[current].querySelector(".notes")?.innerHTML || "";
+      notesPanel.innerHTML = "<strong>Notas del presentador</strong>" + text;
+      notesPanel.classList.add("is-open");
+    }
+
+    function toggleNotes() {
+      if (notesPanel.classList.contains("is-open")) {
+        notesPanel.classList.remove("is-open");
+      } else {
+        showNotes();
+      }
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current + 1);
+      }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current - 1);
+      }
+      if (event.key === "Home") showSlide(0);
+      if (event.key === "End") showSlide(slides.length - 1);
+      if (event.key.toLowerCase() === "s") toggleNotes();
+      if (event.key === "Escape") notesPanel.classList.remove("is-open");
+    });
+
+    const initial = Number(window.location.hash.replace("#", ""));
+    showSlide(Number.isFinite(initial) && initial > 0 ? initial - 1 : 0);
+  </script>
+</body>
+</html>
